@@ -1,0 +1,26 @@
+movie_id,title,genre,release_date,director,runtime_minutes,budget_usd,language,rating_advisory,status
+1,Stellar Run,Sci-Fi,2025-01-15,Ananya Sharma,118,45000000,English,PG-13,Released
+2,Dark Orbit,Sci-Fi,2024-08-10,Marcus Webb,132,60000000,English,PG-13,Released
+3,Last Kingdom,Drama,2024-11-20,Sofia Mendes,145,55000000,English,R,Released
+4,The Hollow Men,Thriller,2025-02-14,Ravi Nair,108,30000000,English,R,Released
+5,Neon City Blues,Action,2024-09-05,Clara Fontaine,122,70000000,English,PG-13,Released
+6,Laugh Track,Comedy,2025-03-01,Tommy Park,95,18000000,English,PG,Released
+7,Just Kidding,Comedy,2024-12-10,Bianca Rossi,90,15000000,English,PG,Released
+8,The Funny Bone,Comedy,2025-01-28,Dev Chopra,88,12000000,English,PG,Released
+9,Echoes of Tomorrow,Drama,2025-04-05,Layla Hassan,138,40000000,English,PG-13,Released
+10,Crimson Tide Rising,Thriller,2024-07-22,Jonas Klein,115,35000000,English,R,Released
+11,Desert Storm 2025,Action,2025-01-30,Priya Kapoor,127,80000000,English,PG-13,Released
+12,Romance at Dawn,Romance,2024-10-14,Mei Tanaka,102,20000000,English,PG,Released
+13,Quantum Breach,Sci-Fi,2025-03-18,Aaron Mills,140,65000000,English,PG-13,Released
+14,The Uprising,Action,2024-06-01,Felix Okonkwo,130,75000000,English,R,Released
+15,Silent Protocol,Thriller,2025-02-28,Nadia Volkov,119,28000000,English,PG-13,Released
+16,Chasing Horizons,Romance,2024-11-05,Carlos Diaz,98,22000000,English,PG,Released
+17,Wildfire,Documentary,2025-01-10,Iman Osei,85,8000000,English,G,Released
+18,Deep Blue Secrets,Drama,2024-09-28,Hannah Clarke,142,38000000,English,PG-13,Released
+19,Code Red,Action,2025-04-12,Arjun Mehta,125,68000000,English,PG-13,Released
+20,Laughing Out Loud,Comedy,2024-08-20,Teresa Wang,92,14000000,English,PG,Released
+21,The Grand Illusion,Drama,2025-03-25,Elena Popescu,155,48000000,English,PG-13,Released
+22,Overdrive,Action,2024-10-31,Kwame Asante,120,72000000,English,PG-13,Released
+23,Night Shift,Thriller,2025-02-07,Yuki Yamamoto,110,32000000,English,R,Released
+24,Second Chances,Romance,2024-12-20,Laura Bianchi,105,25000000,English,PG,Released
+25,Carbon Echo,Sci-Fi,2024-07-04,Raj Patel,135,58000000,English,PG-13,Released
