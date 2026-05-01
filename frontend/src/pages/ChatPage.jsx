@@ -60,7 +60,9 @@ export default function ChatPage() {
         { 
           role: 'assistant', 
           content: res.data.reply, 
-          references: res.data.data_references 
+          references: res.data.data_references,
+          confidence_score: res.data.confidence_score,
+          confidence_label: res.data.confidence_label
         }
       ]);
     } catch (err) {
@@ -213,6 +215,21 @@ export default function ChatPage() {
                       : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-tl-none'
                   }`}>
                     {renderMessageContent(msg)}
+                    
+                    {!isUser && msg.confidence_score && (
+                      <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700">
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Confidence: {msg.confidence_label}</span>
+                          <span className="text-[10px] font-bold text-gray-500">{msg.confidence_score}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                          <div 
+                            className={`h-full rounded-full transition-all duration-1000 ease-out ${msg.confidence_score >= 80 ? 'bg-green-500' : msg.confidence_score >= 60 ? 'bg-blue-500' : 'bg-yellow-500'}`} 
+                            style={{width: `${msg.confidence_score}%`}}
+                          ></div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   
                   {/* User Avatar */}

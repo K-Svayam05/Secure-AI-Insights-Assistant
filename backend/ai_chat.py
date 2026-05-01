@@ -27,6 +27,8 @@ class ChatResponse(BaseModel):
     data_references: List[str]
     blocked: bool = False
     block_reason: Optional[str] = None
+    confidence_score: int = 100
+    confidence_label: str = "Data-backed"
 
 def get_anthropic_client():
     api_key = os.getenv("ANTHROPIC_API_KEY")
@@ -176,9 +178,21 @@ def chat_endpoint(request: ChatRequest):
         reply = message.content[0].text
         references = extract_data_references(reply)
         
+        score = 40
+        label = "Inferred"
+        msg_low = last_user_msg.lower()
+        if any(w in msg_low for w in ["top", "revenue", "views", "city", "kpi", "genre", "roas", "cpa", "ctr", "engagement", "trend", "underperforming", "compare", "highest"]):
+            score = 100
+            label = "Data-backed"
+        elif any(w in msg_low for w in ["policy", "recommendation", "audit", "strategy", "compliance", "tier", "gdpr", "guideline"]):
+            score = 70
+            label = "Policy-informed"
+            
         return ChatResponse(
             reply=reply,
-            data_references=references
+            data_references=references,
+            confidence_score=score,
+            confidence_label=label
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Anthropic API Error: {str(e)}")

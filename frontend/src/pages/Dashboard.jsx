@@ -12,6 +12,10 @@ export default function Dashboard() {
   const [regionalData, setRegionalData] = useState([]);
   const [topTitles, setTopTitles] = useState([]);
   const [signals, setSignals] = useState([]);
+  const [heroSignal, setHeroSignal] = useState(null);
+  
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
   
   const [selectedTitle, setSelectedTitle] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,12 +38,30 @@ export default function Dashboard() {
         setRegionalData(regRes.data);
         setTopTitles(topRes.data);
         setSignals(sigRes.data);
+        if (sigRes.data && sigRes.data.length > 0) {
+          setHeroSignal(sigRes.data[Math.floor(Math.random() * sigRes.data.length)]);
+        }
       } catch (err) {
         console.error("Failed to fetch dashboard data:", err);
       }
     };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (searchQuery.length >= 3) {
+      const fetchSearch = async () => {
+        try {
+          const res = await apiClient.get(`/api/search?q=${searchQuery}`);
+          setSearchResults(res.data);
+        } catch (e) {}
+      };
+      const timeoutId = setTimeout(() => fetchSearch(), 300);
+      return () => clearTimeout(timeoutId);
+    } else {
+      setSearchResults([]);
+    }
+  }, [searchQuery]);
 
   const openTitleModal = async (titleId) => {
     try {
@@ -69,21 +91,84 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors pb-10">
       
       {/* Top Nav */}
-      <header className="bg-white dark:bg-gray-800 shadow-sm px-6 py-4 flex justify-between items-center border-b dark:border-gray-700">
+      <header className="bg-white dark:bg-gray-800 shadow-sm px-6 py-4 flex justify-between items-center border-b dark:border-gray-700 print:hidden relative z-40">
         <div className="flex items-center space-x-4">
           <div className="font-bold text-2xl tracking-tight text-blue-600 dark:text-blue-400">Futures First</div>
           <span className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-xs font-semibold px-2.5 py-0.5 rounded">Q1 2025</span>
         </div>
-        <button 
-          onClick={() => setIsDrawerOpen(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow"
-        >
-          Generate Executive Summary
-        </button>
+        
+        {/* Global Search */}
+        <div className="relative flex-1 max-w-md mx-8 hidden md:block">
+          <input 
+            type="text"
+            className="w-full pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-700 border-none rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+            placeholder="Search titles or genres..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <svg className="w-4 h-4 absolute left-4 top-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+          
+          {searchResults.length > 0 && (
+            <div className="absolute top-full mt-2 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl overflow-hidden z-50">
+              {searchResults.map(res => (
+                <button 
+                  key={res.movie_id}
+                  onClick={() => {
+                    openTitleModal(res.title);
+                    setSearchQuery('');
+                    setSearchResults([]);
+                  }}
+                  className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-0"
+                >
+                  <div className="font-semibold text-sm">{res.title}</div>
+                  <div className="text-xs text-gray-500">{res.genre}</div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center space-x-3">
+          <button onClick={() => window.print()} className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm font-medium transition-colors hidden lg:block mr-2">
+            Export PDF Summary
+          </button>
+          <button 
+            onClick={() => setIsDrawerOpen(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow"
+          >
+            Generate Executive Summary
+          </button>
+        </div>
       </header>
 
       <main className="p-6 max-w-7xl mx-auto space-y-6">
         
+        {/* Insight of the Day Hero Banner */}
+        {heroSignal && (
+          <div className={`rounded-2xl p-8 text-white shadow-lg print:hidden bg-gradient-to-r ${
+            heroSignal.severity === 'critical' ? 'from-red-600 to-red-800' :
+            heroSignal.severity === 'positive' ? 'from-green-600 to-green-800' :
+            'from-blue-600 to-blue-800'
+          }`}>
+            <div className="flex justify-between items-start">
+              <div className="max-w-2xl">
+                <span className="inline-block px-3 py-1 bg-white/20 rounded-full text-xs font-bold tracking-wider uppercase mb-4 backdrop-blur-sm">Insight of the Day</span>
+                <h1 className="text-3xl font-bold mb-3">{heroSignal.title}</h1>
+                <p className="text-lg opacity-90 leading-relaxed mb-6">{heroSignal.body}</p>
+                <button 
+                  onClick={() => alert(`Deep-dive requested for: ${heroSignal.title}. \n(This simulates auto-navigating to ChatPage with a pre-filled prompt!)`)}
+                  className="bg-white text-gray-900 px-6 py-2.5 rounded-lg text-sm font-bold shadow hover:bg-gray-100 transition-colors flex items-center"
+                >
+                  Deep-dive →
+                </button>
+              </div>
+              <div className="hidden md:flex text-6xl opacity-50">
+                {heroSignal.severity === 'critical' ? '⚠' : heroSignal.severity === 'positive' ? '📈' : '💡'}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* KPI Cards Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <KpiCard title="Total Views" value={formatNumber(kpis?.total_watch_events)} delta="+12.4%" deltaType="positive" />
@@ -94,7 +179,7 @@ export default function Dashboard() {
 
         {/* Signals Strip */}
         {signals && signals.length > 0 && (
-          <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x">
+          <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x print:hidden">
             {signals.map(signal => (
               <div key={signal.id} className={`flex-shrink-0 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-4 snap-start transition-colors ${
                 signal.severity === 'positive' ? 'border-l-green-500' :
@@ -293,7 +378,7 @@ export default function Dashboard() {
 
       {/* Drawer - Executive Summary */}
       {isDrawerOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end">
+        <div className="fixed inset-0 z-50 flex justify-end print:hidden">
           {/* Backdrop */}
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm transition-opacity" onClick={() => setIsDrawerOpen(false)} />
           {/* Drawer Panel */}
